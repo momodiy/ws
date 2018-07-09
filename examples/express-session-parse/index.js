@@ -26,20 +26,24 @@ app.use(express.static('public'));
 app.use(sessionParser);
 
 app.post('/login', (req, res) => {
-  //
-  // "Log in" user and set userId to session.
-  //
+  /*
+  * "Log in" user and set userId to session.
+  * uuid is a npm package to generate unique id
+  **/
   const id = uuid.v4();
 
   console.log(`Updating session for user ${id}`);
   req.session.userId = id;
-  res.send({ result: 'OK', message: 'Session updated' });
+  res.send({result: 'OK', message: 'Session updated'});
 });
 
+/*
+* 点击登出自动销毁session
+* */
 app.delete('/logout', (request, response) => {
   console.log('Destroying session');
   request.session.destroy();
-  response.send({ result: 'OK', message: 'Session destroyed' });
+  response.send({result: 'OK', message: 'Session destroyed'});
 });
 
 //
@@ -63,7 +67,12 @@ const wss = new WebSocket.Server({
   server
 });
 
+/*
+* websocket连接时自动创建用户session
+* */
 wss.on('connection', (ws, req) => {
+  console.log(req.connection);
+  console.log(req.headers);
   ws.on('message', (message) => {
     //
     // Here we can now use session parameters.
