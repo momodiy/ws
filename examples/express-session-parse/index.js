@@ -5,6 +5,12 @@ const express = require('express');
 const http = require('http');
 const uuid = require('uuid');
 
+/*
+* 真实引入的文件路径为根路径下的index.js文件
+* 也可以写成 const WebSocket = require('../../index');
+*
+* 注：此时package.json文件中不应该有自己的入口文件（也就是不应该配置main属性）
+* */
 const WebSocket = require('../..');
 
 const app = express();
@@ -25,6 +31,9 @@ const sessionParser = session({
 app.use(express.static('public'));
 app.use(sessionParser);
 
+/*
+ *
+ * api 登录 */
 app.post('/login', (req, res) => {
   /*
   * "Log in" user and set userId to session.
@@ -38,7 +47,7 @@ app.post('/login', (req, res) => {
 });
 
 /*
-* 点击登出自动销毁session
+* api：登出自动销毁session
 * */
 app.delete('/logout', (request, response) => {
   console.log('Destroying session');
