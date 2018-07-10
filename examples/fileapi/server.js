@@ -6,7 +6,7 @@ var path = require('path');
 var app = express();
 var server = require('http').Server(app);
 var events = require('events');
-var ansi = require('ansi');
+var ansi = require('ansi'); // use color in terminal
 var cursor = ansi(process.stdout);
 
 function BandwidthSampler (ws, interval) {

@@ -90,6 +90,14 @@ wss.on('connection', (ws, req) => {
   });
 });
 
+/*
+* 发送消息时，log输出
+* */
+
+wss.on('message', data => {
+  console.log(data);
+})
+
 //
 // Start the server.
 //
