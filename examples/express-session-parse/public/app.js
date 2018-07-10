@@ -4,9 +4,11 @@
   const wsButton = document.querySelector('#wsButton');
   const logout = document.querySelector('#logout');
   const login = document.querySelector('#login');
+  const noop = () => {
+  };
 
-  let text = document.getElementById('wsmsg')
-  let btn = document.getElementById('sub')
+  let text = document.getElementById('wsmsg');
+  let btn = document.getElementById('sub');
   btn.disable = false;
   // 展示提示信息
   const showMessage = message => {
@@ -35,6 +37,7 @@
     fetch('/logout', {method: 'DELETE', credentials: 'same-origin'})
       .then(handleResponse)
       .then(showMessage('logout success'))
+      .then(() => (btn.onclick = noop))
       .catch((err) => showMessage(err.message));
   };
 
@@ -43,30 +46,38 @@
   /*
   * 打开websocket连接
   * */
-  wsButton.onclick = () => {
-    console.log(ws);
 
+  wsButton.onclick = async () => {
+    ws && console.log(ws.readyState);
     if (ws) {
-      btn.disable = false;
-      ws.onerror = ws.onopen = ws.onclose = null;
-      btn.onclick = () => {
-      };
-      return ws.close();
+      btn.onclick = ws.onerror = ws.onopen = ws.onclose = null;
+      ws.close();
     }
+
+    // connection success
     btn.disable = true;
-
-    // 初始化websocket连接（hook函数 onerror、onopen、onclose）
-    ws = new WebSocket(`ws://${location.host}`);
-    ws.onerror = () => showMessage('WebSocket error');
-    ws.onopen = () => showMessage('WebSocket connection success');
-    ws.onclose = () => showMessage('WebSocket close success');
-
-
+    ws = await new WebSocket(`ws://${location.host}`);
     btn.onclick = () => {
       if (text.value === '') return;
       ws.send(text.value);
       showMessage(new Date() + ':              ' + text.value);
       text.value = '';
+    };
+
+    // 初始化websocket连接（hook函数 onerror、onopen、onclose）
+    ws.onerror = () => showMessage('WebSocket error');
+    ws.onopen = () => {
+      btn.onclick = () => {
+        if (text.value === '') return;
+        ws.send(text.value, () => console.log('send error'));
+        showMessage(new Date() + ':              ' + text.value);
+        text.value = '';
+      };
+      showMessage('WebSocket connection established');
+    }
+    ws.onclose = () => {
+      btn.onclick = noop;
+      showMessage('WebSocket connection closed');
     };
   };
 })();
