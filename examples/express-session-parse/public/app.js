@@ -18,9 +18,7 @@
   // 根据response返回值
   const handleResponse = response => {
     return response.ok
-      ? response.json().then((data) => {
-        console.log('handle response data---------------');
-        console.log(data);
+      ? response.json().then(data => {
         return JSON.stringify(data, null, 2);
       })
       : Promise.reject(new Error('Unexpected response'));
@@ -30,7 +28,7 @@
     fetch('/login', {method: 'POST', credentials: 'same-origin'})
       .then(handleResponse)
       .then(showMessage('login success'))
-      .catch((err) => showMessage(err.message));
+      .catch(err => showMessage(err.message));
   };
 
   logout.onclick = () => {
@@ -38,7 +36,7 @@
       .then(handleResponse)
       .then(showMessage('logout success'))
       .then(() => (btn.onclick = noop))
-      .catch((err) => showMessage(err.message));
+      .catch(err => showMessage(err.message));
   };
 
   let ws;
